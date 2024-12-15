@@ -5,184 +5,139 @@
     <div class="button-container">
       <button @click="drawChart">绘制曲线</button>
     </div>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
     <canvas id="fitCurveChart"></canvas>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import Chart from "chart.js/auto";
-import * as math from "math.js"; // 引入 math.js 库
+import regression from "regression";
+
+let chartInstance = null;
+const errorMessage = ref("");
+const successMessage = ref("");
 
 // 从文件中读取温度数据并转换为数组
 async function fetchTemperatureData() {
   try {
     const response = await fetch('/temperature.txt');
-    const rawText = await response.text(); // 读取文件内容为文本
+    const rawText = await response.text();
     const rawObjects = rawText
-      .trim() // 去除多余的空白字符
-      .split('\n') // 按行分割
-      .map((line) => JSON.parse(line)); // 将每行解析为 JSON 对象
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line));
 
-    // 合并所有对象为一个时间-温度的键值对数组
     const mergedData = rawObjects.reduce((acc, obj) => ({ ...acc, ...obj }), {});
 
-    // 转换为数组格式并去重
     const data = Object.entries(mergedData).map(([time, temp]) => ({
-      time: new Date(time),
+      time: new Date(time).getTime(),
       temp: parseFloat(temp),
     }));
-    return data.sort((a, b) => a.time - b.time); // 按时间排序
+
+    return data.sort((a, b) => a.time - b.time);
   } catch (error) {
     console.error("Failed to fetch temperature data:", error);
     return [];
   }
 }
 
-// 计算多项式拟合
-function polynomialFit(x, y, degree = 3) {
-  const A = [];
-  const b = [];
+// 原始的 removeOutliers 函数，保留异常点过滤逻辑
+function removeOutliers(data) {
+  if (data.length < 2) return data;
 
-  for (let i = 0; i < x.length; i++) {
-    const row = [];
-    for (let j = 0; j <= degree; j++) {
-      row.push(Math.pow(x[i], j));
-    }
-    A.push(row);
-    b.push(y[i]);
-  }
-
-  try {
-    const pseudoInverse = math.pinv(A); // 使用伪逆矩阵
-    const coeffs = math.multiply(pseudoInverse, b); // 求解最小二乘解
-    return coeffs.reverse(); // 返回从最高次到最低次的系数
-  } catch (error) {
-    console.error("Error solving polynomial coefficients:", error);
-    return [];
-  }
-}
-
-// 根据拟合系数生成曲线数据
-function generateFittedData(coeffs, xRange) {
-  return xRange.map((x) => {
-    return coeffs.reduce((sum, coeff, index) => sum + coeff * Math.pow(x, coeffs.length - 1 - index), 0);
+  return data.filter((entry, index) => {
+    if (index === 0) return true; // 保留第一个点
+    const rateOfChange = Math.abs(entry.temp - data[index - 1].temp) / ((entry.time - data[index - 1].time) / 3600000);
+    return rateOfChange <= 50; // 使用速率变化阈值
   });
 }
-
-// 根据拟合模型生成未来预测点
-function generatePredictionPoints(coeffs, start, count, step) {
-  const predictions = [];
-  for (let i = 1; i <= count; i++) {
-    const x = start + i * step;
-    const y = coeffs.reduce((sum, coeff, index) => sum + coeff * Math.pow(x, coeffs.length - 1 - index), 0);
-    predictions.push({ x, y });
-  }
-  return predictions;
-}
-
-// 绘制曲线图
-let chartInstance = null;
 
 async function drawChart() {
   const ctx = document.getElementById("fitCurveChart").getContext("2d");
-
-  // 如果有已有图表实例，先销毁
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
-
   const temperatureData = await fetchTemperatureData();
 
+  if (chartInstance) chartInstance.destroy();
+
   if (temperatureData.length === 0) {
-    console.error("No data to draw the chart.");
+    errorMessage.value = "数据为空，无法绘制图表。";
+    successMessage.value = "";
     return;
   }
 
-  const x = temperatureData.map((entry) => entry.time.getTime());
-  const y = temperatureData.map((entry) => entry.temp);
-  const degree = 3;
-  // const coeffs = polynomialFit(x, y, degree);
+  const filteredData = removeOutliers(temperatureData);
 
-  // const xRange = Array.from(
-  //   { length: 100 },
-  //   (_, i) => Math.min(...x) + (i * (Math.max(...x) - Math.min(...x))) / 99
-  // );
-  // const fittedY = generateFittedData(coeffs, xRange);
+  if (filteredData.length < 2) {
+    errorMessage.value = `有效数据不足，无法进行拟合。\n总数据点数: ${temperatureData.length}，有效数据点数: ${filteredData.length}`;
+    successMessage.value = "";
+    return;
+  }
 
-  // const predictionStep = (Math.max(...x) - Math.min(...x)) / x.length;
-  // const predictionPoints = generatePredictionPoints(
-  //   coeffs,
-  //   Math.max(...x),
-  //   10,
-  //   predictionStep
-  // );
+  errorMessage.value = "";
 
-  chartInstance = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: [
-        ...temperatureData.map((entry) =>
-          entry.time.toLocaleTimeString("en-US", { hour12: false })
-        ),
-        // ...predictionPoints.map((point) =>
-        //   new Date(point.x).toLocaleTimeString("en-US", { hour12: false })
-        // ),
-      ],
-      datasets: [
-        {
-          label: "原始数据",
-          data: y,
-          borderColor: "rgba(75, 192, 192, 1)",
-          fill: false,
-          tension: 0.4,
+  // 确定时间和温度的范围
+  const startTime = filteredData[0].time;
+  const maxTime = Math.max(...filteredData.map((entry) => entry.time));
+  const minTemp = Math.min(...filteredData.map((entry) => entry.temp));
+  const maxTemp = Math.max(...filteredData.map((entry) => entry.temp));
+
+  // 对时间和温度进行归一化
+  const normalizedData = filteredData.map((entry) => [
+    (entry.time - startTime) / (maxTime - startTime), // 时间归一化到 [0, 1]
+    (entry.temp - minTemp) / (maxTemp - minTemp), // 温度归一化到 [0, 1]
+  ]);
+
+  try {
+    const resultPolynomial = regression.polynomial(normalizedData, { order: 3 });
+
+    // 将拟合结果反归一化到原始温度范围
+    const fittedDataPolynomial = resultPolynomial.points.map(([time, temp]) => ({
+      time: new Date(startTime + time * (maxTime - startTime)).toLocaleTimeString("zh-CN", { hour12: false }),
+      temp: temp * (maxTemp - minTemp) + minTemp, // 反归一化温度
+    }));
+
+    successMessage.value = `拟合成功！有效数据点数: ${filteredData.length}`;
+
+    chartInstance = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: filteredData.map((entry) => new Date(entry.time).toLocaleTimeString("zh-CN", { hour12: false })),
+        datasets: [
+          {
+            label: "原始数据",
+            data: filteredData.map((d) => d.temp),
+            borderColor: "rgba(75, 192, 192, 0)", // 删除原始数据的连线
+            pointBackgroundColor: "rgba(75, 192, 192, 1)",
+            fill: false,
+          },
+          {
+            label: "三次多项式拟合",
+            data: fittedDataPolynomial.map((d) => d.temp),
+            borderColor: "rgba(255, 0, 0, 1)",
+            borderDash: [5, 5],
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: { display: true },
         },
-        // {
-        //   label: "拟合曲线",
-        //   data: fittedY,
-        //   borderColor: "rgba(255, 99, 132, 1)",
-        //   fill: false,
-        //   borderDash: [5, 5],
-        // },
-        // {
-        //   label: "预测点",
-        //   data: predictionPoints.map((point) => point.y),
-        //   borderColor: "rgba(255, 165, 0, 1)",
-        //   fill: false,
-        //   pointStyle: "circle",
-        //   pointRadius: 5,
-        //   showLine: false,
-        // },
-      ],
-    },
-    options: {
-      plugins: {
-        legend: {
-          display: true,
+        scales: {
+          x: { title: { display: true, text: "时间" } },
+          y: { title: { display: true, text: "温度 (°C)" } },
         },
       },
-      scales: {
-        x: {
-          ticks: {
-            maxTicksLimit: 10,
-          },
-          title: {
-            display: true,
-            text: "时间",
-          },
-        },
-        y: {
-          title: {
-            display: true,
-            text: "温度 (°C)",
-          },
-        },
-      },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error during regression or chart rendering:", error);
+    errorMessage.value = "拟合失败，请检查数据质量。";
+    successMessage.value = "";
+  }
 }
 
-// 初始化图表
 onMounted(() => {
   drawChart();
 });
@@ -190,30 +145,51 @@ onMounted(() => {
 
 <style scoped>
 .fit-curve {
-  background: #fef7e0;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to bottom, #fdf5e6, #f9e4b7);
+  padding: 25px;
+  border-radius: 10px;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .button-container {
-  display: flex;
-  justify-content: center;
   margin-bottom: 20px;
 }
 
 button {
-  background: #007bff;
-  color: #fff;
+  background: #4caf50;
+  color: white;
+  padding: 12px 25px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background: #0056b3;
+  background: #45a049;
+}
+
+.error-message {
+  color: #e53935;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #43a047;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+canvas {
+  margin-top: 20px;
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
 }
 </style>
 
