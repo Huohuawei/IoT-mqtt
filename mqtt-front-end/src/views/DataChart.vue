@@ -2,27 +2,40 @@
   <div class="data-chart">
     <!-- 水平排列图表 -->
     <div class="chart-container-wrapper">
+      <!-- 第一个图表及其说明与按钮 -->
       <div class="chart-container">
         <canvas ref="temperatureChart"></canvas>
+        <div class="chart-info">
+          <h3>温度数据</h3>
+          <p>该图展示了 2-6 月期间的平均温度变化。点击按钮查看详细数据。</p>
+          <div class="card" @click="goToComponent('/data-chart/temperature')">
+            <button>查看温度详细数据</button>
+          </div>
+        </div>
       </div>
+
+      <!-- 第二个图表及其说明与按钮 -->
       <div class="chart-container">
         <canvas ref="humidityChart"></canvas>
+        <div class="chart-info">
+          <h3>湿度数据</h3>
+          <p>该图展示了 2-6 月期间的平均湿度变化。点击按钮查看详细数据。</p>
+          <div class="card" @click="goToComponent('/data-chart/humidity')">
+            <button>查看湿度详细数据</button>
+          </div>
+        </div>
       </div>
+
+      <!-- 第三个图表及其说明与按钮 -->
       <div class="chart-container">
         <canvas ref="pressureChart"></canvas>
-      </div>
-    </div>
-
-    <!-- 按钮 -->
-    <div class="button-container">
-      <div class="card" @click="goToComponent('/data-chart/temperature')">
-        <button>查看温度详细数据</button>
-      </div>
-      <div class="card" @click="goToComponent('/data-chart/humidity')">
-        <button>查看湿度详细数据</button>
-      </div>
-      <div class="card" @click="goToComponent('/data-chart/pressure')">
-        <button>查看压强详细数据</button>
+        <div class="chart-info">
+          <h3>气压数据</h3>
+          <p>该图展示了 2-6 月期间的平均气压变化。点击按钮查看详细数据。</p>
+          <div class="card" @click="goToComponent('/data-chart/pressure')">
+            <button>查看气压详细数据</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -133,11 +146,11 @@ onMounted(async () => {
   const monthlyPressureData = calculateMonthlyAverage(pressureData, 'pressure');
 
   // 创建温度图表
-  createChart(temperatureChart, monthlyTemperatureData, '2-6月平均温度');
+  createChart(temperatureChart, monthlyTemperatureData, '2-6月平均温度（单位：摄氏度℃）');
   // 创建湿度图表
-  createChart(humidityChart, monthlyHumidityData, '2-6月平均湿度');
+  createChart(humidityChart, monthlyHumidityData, '2-6月平均湿度（单位：%）');
   // 创建压强图表
-  createChart(pressureChart, monthlyPressureData, '2-6月平均压强');
+  createChart(pressureChart, monthlyPressureData, '2-6月平均气压（单位：帕pa）');
 });
 </script>
 
@@ -146,40 +159,109 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f4f4f9;
 }
 
 .chart-container-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 20px;
-  /* 图表之间的间隔 */
+  width: 100%;
+  flex-wrap: wrap;
   margin-bottom: 30px;
 }
 
 .chart-container {
-  width: 500px;
+  width: 30%; /* 每个图表容器宽度为30% */
   height: 500px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.button-container {
-  display: flex;
-  justify-content: space-around;
+.chart-container canvas {
   width: 100%;
-  margin-top: 20px;
+  height: 80%;
+}
+
+.chart-info {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
+
+.chart-info h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.chart-info p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.card {
+  margin-top: 15px;
+  text-align: center;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 16px;
   cursor: pointer;
   background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease-in-out, transform 0.2s;
+  min-width: 160px;
 }
 
 button:hover {
   background-color: #45a049;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 1200px) {
+  .chart-container-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    width: 100%;
+  }
+
+  button {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    width: 100%;
+  }
+
+  button {
+    min-width: 120px;
+  }
 }
 </style>
