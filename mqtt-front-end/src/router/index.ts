@@ -3,6 +3,9 @@ import HomeView from '../views/Home.vue'
 import DataChart from "../views/DataChart.vue";
 import DescriptiveInfo from "../views/DescriptiveInfo.vue";
 import FitCurve from "../views/FitCurve.vue";
+import HumidityData from '@/views/datacharts/HumidityData.vue';
+import TemperatureData from '@/views/datacharts/TemperatureData.vue';
+import PressureData from '@/views/datacharts/PressureData.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,7 +18,22 @@ const router = createRouter({
     {
       path: "/data-chart",
       name: "DataChart",
-      component: DataChart
+      component: DataChart,
+    },
+    {
+      path: '/data-chart/temperature',
+      name: 'TemperatureDetails',
+      component: TemperatureData,
+    },
+    {
+      path: '/data-chart/humidity',
+      name: 'HumidityDetails',
+      component: HumidityData,
+    },
+    {
+      path: '/data-chart/pressure',
+      name: 'PressureDetails',
+      component: PressureData,
     },
     {
       path: "/descriptive-info",
@@ -27,8 +45,7 @@ const router = createRouter({
       name: "FitCurve",
       component: FitCurve
     },
-
   ],
 })
 
-export default router
+export default router;
