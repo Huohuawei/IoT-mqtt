@@ -128,7 +128,11 @@ const updateData = async () => {
 const getLatestMessage = async () => {
   try {
     const response = await axios.get("http://localhost:8080/api/data/getLatest");
+    // const response = await axios.get("http://localhost:8080/api/data/pressure/latest");
+    // data.value = response.data;
+    console.log("get latest message successfully")
     data.value = [JSON.stringify(response.data.payload)];
+
   } catch (error) {
     console.error("Error fetching latest message:", error);
   }
@@ -137,6 +141,8 @@ const getLatestMessage = async () => {
 const fetchData = async (type) => {
   try {
     const response = await axios.get(`http://localhost:8080/api/data/${type}`);
+
+    console.log("get relevant data successfully\n")
     data.value = response.data;
   } catch (error) {
     console.error(`Error fetching ${type} data:`, error);

@@ -1,123 +1,103 @@
 <template>
-  <div class="fit-curve">
-    <h2>拟合曲线与预测点</h2>
-    <p>此处绘制拟合曲线及预测点，用于预测未来趋势。</p>
-    <div class="button-container">
-      <button @click="drawChart">绘制曲线</button>
+  <div class="temperature-data-container">
+    <!-- 主图区域 -->
+    <div class="temperature-charts">
+      <!-- 温度预测曲线 -->
+      <div class="chart-container">
+        <canvas id="fitCurveChart"></canvas>
+      </div>
     </div>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    <canvas id="fitCurveChart"></canvas>
+
+    <!-- 右侧温度数据说明 -->
+    <div class="data-description">
+      <h3>温度数据说明</h3>
+      <p>以下是基于温度数据的处理和预测过程，旨在为后续分析和应用提供准确的温度趋势预测。</p>
+      <ul>
+        <li><strong>数据清洗</strong>: 检测并去除异常值，剔除异常波动较大的数据，以确保数据的有效性。</li>
+        <li><strong>时间聚合</strong>: 对处理后的数据进行时间聚合，计算每个时间段的平均温度，以便更加清晰地展示温度变化趋势。</li>
+        <li><strong>正弦波拟合模型</strong>: 基于正弦波模型对温度数据进行预测，生成未来时间点的温度趋势数据，为进一步分析提供可靠输入。</li>
+        <li><strong>预测结果</strong>: 展示处理后的文档数据和预测的温度趋势曲线，帮助直观理解未来温度变化趋势。</li>
+      </ul>
+      <p><strong>注意</strong>: 温度数据预测是基于历史温度数据及拟合模型生成的未来趋势，预测结果可能会受到外部因素的影响。</p>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import Chart from "chart.js/auto";
-import regression from "regression";
 
+// Chart.js实例
 let chartInstance = null;
 const errorMessage = ref("");
-const successMessage = ref("");
 
-// 从文件中读取温度数据并转换为数组
-async function fetchTemperatureData() {
+// 从后端获取预测数据
+async function fetchPredictionData() {
   try {
-    const response = await fetch('/temperature.txt');
-    const rawText = await response.text();
-    const rawObjects = rawText
-      .trim()
-      .split('\n')
-      .map((line) => JSON.parse(line));
+    const response = await fetch("http://127.0.0.1:5000/predict", { method: "GET" });
 
-    const mergedData = rawObjects.reduce((acc, obj) => ({ ...acc, ...obj }), {});
+    if (!response.ok) {
+      const errorDetail = await response.json();
+      throw new Error(`后端错误: ${errorDetail.error || response.statusText}`);
+    }
 
-    const data = Object.entries(mergedData).map(([time, temp]) => ({
-      time: new Date(time).getTime(),
-      temp: parseFloat(temp),
-    }));
+    const result = await response.json();
+    const cleanedData = result.cleaned_data || [];
+    const predictions = result.predictions || [];
 
-    return data.sort((a, b) => a.time - b.time);
+    if (cleanedData.length === 0 || predictions.length === 0) {
+      throw new Error("后端返回数据为空或不完整");
+    }
+
+    return { cleaned_data: cleanedData, predictions: predictions };
   } catch (error) {
-    console.error("Failed to fetch temperature data:", error);
-    return [];
+    console.error("Error fetching prediction data:", error);
+    throw new Error(error.message || "无法获取数据，请检查后端服务或网络连接。");
   }
 }
 
-// 原始的 removeOutliers 函数，保留异常点过滤逻辑
-function removeOutliers(data) {
-  if (data.length < 2) return data;
-
-  return data.filter((entry, index) => {
-    if (index === 0) return true; // 保留第一个点
-    const rateOfChange = Math.abs(entry.temp - data[index - 1].temp) / ((entry.time - data[index - 1].time) / 3600000);
-    return rateOfChange <= 50; // 使用速率变化阈值
-  });
+// 过滤无效数据
+function filterValidData(data) {
+  return data.filter((item) => item.time && !isNaN(item.temp));
 }
 
+// 绘制图表
 async function drawChart() {
   const ctx = document.getElementById("fitCurveChart").getContext("2d");
-  const temperatureData = await fetchTemperatureData();
 
   if (chartInstance) chartInstance.destroy();
 
-  if (temperatureData.length === 0) {
-    errorMessage.value = "数据为空，无法绘制图表。";
-    successMessage.value = "";
-    return;
-  }
-
-  const filteredData = removeOutliers(temperatureData);
-
-  if (filteredData.length < 2) {
-    errorMessage.value = `有效数据不足，无法进行拟合。\n总数据点数: ${temperatureData.length}，有效数据点数: ${filteredData.length}`;
-    successMessage.value = "";
-    return;
-  }
-
-  errorMessage.value = "";
-
-  // 确定时间和温度的范围
-  const startTime = filteredData[0].time;
-  const maxTime = Math.max(...filteredData.map((entry) => entry.time));
-  const minTemp = Math.min(...filteredData.map((entry) => entry.temp));
-  const maxTemp = Math.max(...filteredData.map((entry) => entry.temp));
-
-  // 对时间和温度进行归一化
-  const normalizedData = filteredData.map((entry) => [
-    (entry.time - startTime) / (maxTime - startTime), // 时间归一化到 [0, 1]
-    (entry.temp - minTemp) / (maxTemp - minTemp), // 温度归一化到 [0, 1]
-  ]);
-
   try {
-    const resultPolynomial = regression.polynomial(normalizedData, { order: 3 });
+    const result = await fetchPredictionData();
+    const cleanedData = filterValidData(result.cleaned_data);
+    const predictions = filterValidData(result.predictions);
 
-    // 将拟合结果反归一化到原始温度范围
-    const fittedDataPolynomial = resultPolynomial.points.map(([time, temp]) => ({
-      time: new Date(startTime + time * (maxTime - startTime)).toLocaleTimeString("zh-CN", { hour12: false }),
-      temp: temp * (maxTemp - minTemp) + minTemp, // 反归一化温度
-    }));
+    if (cleanedData.length === 0 || predictions.length === 0) {
+      throw new Error("数据过滤后为空，无法绘制图表。");
+    }
 
-    successMessage.value = `拟合成功！有效数据点数: ${filteredData.length}`;
-
+    // 创建新的图表实例
     chartInstance = new Chart(ctx, {
       type: "line",
       data: {
-        labels: filteredData.map((entry) => new Date(entry.time).toLocaleTimeString("zh-CN", { hour12: false })),
+        labels: cleanedData.map((d) => d.time), // X轴为时间（每10分钟）
         datasets: [
           {
-            label: "原始数据",
-            data: filteredData.map((d) => d.temp),
-            borderColor: "rgba(75, 192, 192, 0)", // 删除原始数据的连线
-            pointBackgroundColor: "rgba(75, 192, 192, 1)",
+            label: "处理后的温度数据",
+            data: cleanedData.map((d) => d.temp),
+            borderColor: "rgba(0, 123, 255, 1)",
+            pointBackgroundColor: "rgba(0, 123, 255, 1)",
+            borderDash: [5, 5],
+            borderWidth: 2,
             fill: false,
           },
           {
-            label: "三次多项式拟合",
-            data: fittedDataPolynomial.map((d) => d.temp),
-            borderColor: "rgba(255, 0, 0, 1)",
-            borderDash: [5, 5],
+            label: "预测温度曲线",
+            data: predictions.map((d) => d.temp),
+            borderColor: "rgba(255, 99, 132, 1)",
+            pointBackgroundColor: "rgba(255, 99, 132, 1)",
             borderWidth: 2,
+            fill: false,
           },
         ],
       },
@@ -126,70 +106,66 @@ async function drawChart() {
           legend: { display: true },
         },
         scales: {
-          x: { title: { display: true, text: "时间" } },
+          x: { title: { display: true, text: "时间 (每10分钟)" } },
           y: { title: { display: true, text: "温度 (°C)" } },
         },
+        responsive: true,
+        maintainAspectRatio: false,
       },
     });
   } catch (error) {
-    console.error("Error during regression or chart rendering:", error);
-    errorMessage.value = "拟合失败，请检查数据质量。";
-    successMessage.value = "";
+    console.error("Chart Drawing Error:", error);
+    errorMessage.value = error.message || "绘制图表失败，请重试。";
   }
 }
 
+// 页面加载时绘制图表
 onMounted(() => {
   drawChart();
 });
 </script>
 
 <style scoped>
-.fit-curve {
-  background: linear-gradient(to bottom, #fdf5e6, #f9e4b7);
-  padding: 25px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.temperature-data-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 20px;
 }
 
-.button-container {
+.temperature-charts {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 70%;
+}
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+}
+
+.data-description {
+  flex: 1;
+  width: 28%;
+  background-color: #f4f4f4;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.data-description h3 {
   margin-bottom: 20px;
-}
-
-button {
-  background: #4caf50;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: #45a049;
-}
-
-.error-message {
-  color: #e53935;
+  font-size: 1.25em;
   font-weight: bold;
-  font-size: 16px;
-  margin-top: 10px;
 }
 
-.success-message {
-  color: #43a047;
-  font-weight: bold;
-  font-size: 16px;
-  margin-top: 10px;
+.data-description ul {
+  list-style-type: disc;
+  padding-left: 20px;
 }
 
-canvas {
-  margin-top: 20px;
-  max-width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+.data-description ul li {
+  margin: 10px 0;
 }
 </style>
-
