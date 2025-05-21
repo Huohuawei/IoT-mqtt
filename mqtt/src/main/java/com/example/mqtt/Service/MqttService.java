@@ -52,40 +52,95 @@ public class MqttService {
 
     private final Map<String, Object> latestMessage = new HashMap<>();
 
-    public void connectAndSubscribe() {
+    private volatile boolean isConnected = false;
+
+    public void init() {
+        connectAndSubscribe();
+    }
+
+    public synchronized void connectAndSubscribe() {
+        if (isConnected) return;
+
         try {
+            System.out.println("Attempting to connect to MQTT broker...");
             mqttClient = new MqttClient(brokerUrl, clientId);
+
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
             options.setUserName(username);
             options.setPassword(password.toCharArray());
-            options.setSocketFactory(getSSLSocketFactory());
+            options.setAutomaticReconnect(true); // 启用自动重连
+
+            // 设置连接超时
+            options.setConnectionTimeout(10);
+
+            // 设置回调
+            mqttClient.setCallback(new MqttCallback() {
+                @Override
+                public void connectionLost(Throwable cause) {
+                    isConnected = false;
+                    System.err.println("Connection lost: " + cause.getMessage());
+                    // 尝试重新连接
+                    reconnect();
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage message) {
+                    handleMessage(topic, message);
+                }
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {
+                    // 消息发布完成
+                }
+            });
 
             mqttClient.connect(options);
-            mqttClient.subscribe(defaultTopic, this::handleMessage);
-            System.out.println("Connected to broker and subscribed to topic: " + defaultTopic);
+            mqttClient.subscribe(defaultTopic, 1); // QoS 1
+            isConnected = true;
+            System.out.println("Successfully connected to broker and subscribed to topic: " + defaultTopic);
         } catch (Exception e) {
+            isConnected = false;
             System.err.println("Error connecting to MQTT broker: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private SSLSocketFactory getSSLSocketFactory() throws Exception {
-        // Configure SSL using truststore.jks
-        System.setProperty("javax.net.ssl.trustStore", trustStorePath);
-        System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
-        return (SSLSocketFactory) SSLSocketFactory.getDefault();
+    private synchronized void reconnect() {
+        if (isConnected) return;
+
+        System.out.println("Attempting to reconnect...");
+        try {
+            if (mqttClient != null) {
+                mqttClient.disconnectForcibly();
+                mqttClient.close();
+            }
+            connectAndSubscribe();
+        } catch (Exception e) {
+            System.err.println("Reconnect failed: " + e.getMessage());
+            // 可以添加定时重试逻辑
+        }
     }
 
     public void publishMessage(String topic, String message) {
+        if (!isConnected || mqttClient == null) {
+            System.err.println("MQTT client not connected, attempting to reconnect...");
+            reconnect();
+            if (!isConnected) {
+                throw new IllegalStateException("Cannot publish message - MQTT client is not connected");
+            }
+        }
+
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             mqttMessage.setQos(1);
             mqttClient.publish(topic, mqttMessage);
-            System.out.println("(publish) Published to topic: " + topic + " payload: " + mqttMessage);
+            System.out.println("Published to topic: " + topic + " payload: " + message);
         } catch (MqttException e) {
+            isConnected = false;
             System.err.println("Error publishing message: " + e.getMessage());
             e.printStackTrace();
+            reconnect(); // 发布失败时尝试重连
         }
     }
 
