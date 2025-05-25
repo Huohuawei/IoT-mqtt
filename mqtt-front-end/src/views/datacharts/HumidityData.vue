@@ -1,42 +1,92 @@
 <template>
   <div class="data-chart-container">
-    <!-- 主图区域 -->
     <div class="charts">
       <div class="chart-container-wrapper">
-        <!-- 湿度折线图 -->
         <div class="chart-container">
           <canvas ref="humidityLineChart"></canvas>
         </div>
-        <!-- 湿度最大值最小值图表 -->
         <div class="chart-container">
           <canvas ref="humidityMaxMinChart"></canvas>
         </div>
       </div>
       <div class="chart-container-wrapper">
-        <!-- 湿度直方图 -->
         <div class="chart-container">
           <canvas ref="humidityHistogram"></canvas>
         </div>
-        <!-- 湿度面积图 -->
         <div class="chart-container">
           <canvas ref="humidityAreaChart"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- 右侧湿度数据说明 -->
     <div class="data-description">
-      <h3>湿度数据说明</h3>
-      <p>以下是基于过去几个月的每日平均湿度数据，展示了湿度变化趋势、分布情况以及波动范围。这些图表可以帮助我们更好地理解环境湿度的变化规律，识别湿度异常波动以及趋势变化。</p>
-      <ul>
-        <li><strong>折线图</strong>: 显示每日湿度的变化趋势，帮助观察湿度随时间的变化情况。通过折线图可以直观地看到湿度是否存在周期性波动，以及是否存在持续的增减趋势。</li>
-        <li><strong>直方图</strong>: 展示湿度的分布情况，按湿度区间进行统计。直方图有助于识别湿度分布的集中程度，查看湿度是否大多数时间处于某个特定范围，或者湿度分布是否较为均匀。</li>
-        <li><strong>面积图</strong>: 强调湿度波动的变化趋势，填充了湿度曲线下方的区域。面积图可以更好地突出湿度的上下波动，特别是湿度在某些特定时间段内的剧烈变化，帮助分析湿度异常的可能原因。</li>
-        <li><strong>湿度最大值最小值图</strong>: 显示每日的最高湿度和最低湿度，填充它们之间的区域。这张图表有助于观察湿度的波动范围，了解环境的湿度极值，特别是在极端天气条件下的湿度变化。</li>
-      </ul>
-      <p><strong>注意</strong>: 湿度数据是根据每天的实际测量结果计算得出的平均值。由于湿度受多种因素（如温度、气压、天气变化等）的影响，因此在分析湿度变化时需要综合考虑这些外部因素的作用。</p> 
+      <div class="description-card">
+        <h3 class="description-title">湿度数据分析</h3>
+        <div class="description-content">
+          <p>基于过去几个月的每日湿度数据，可视化展示了湿度变化趋势、分布情况及波动范围。</p>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>折线图</strong>: 直观展示每日湿度变化趋势，识别周期性波动和长期趋势。
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="12" width="4" height="8" rx="1" fill="currentColor" />
+                <rect x="9" y="8" width="4" height="12" rx="1" fill="currentColor" />
+                <rect x="15" y="4" width="4" height="16" rx="1" fill="currentColor" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>直方图</strong>: 分析湿度分布情况，了解湿度集中范围和分布均匀性。
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M3 17L9 11L13 15L21 7V17H3Z" fill="currentColor" fill-opacity="0.2" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>面积图</strong>: 突出湿度波动变化，识别异常波动时间段。
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M3 12L9 6L13 10L21 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M3 17L9 11L13 15L21 7V17H3Z" fill="currentColor" fill-opacity="0.2" />
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>极值图</strong>: 显示每日最高/最低湿度，分析湿度波动范围。
+            </div>
+          </div>
+
+          <div class="note-box">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                stroke="currentColor" stroke-width="2" />
+              <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <p>湿度数据受温度、气压等外部因素影响，分析时需综合考虑。</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
   </div>
 </template>
 
@@ -50,12 +100,9 @@ const humidityHistogram = ref<HTMLCanvasElement | null>(null);
 const humidityAreaChart = ref<HTMLCanvasElement | null>(null);
 const humidityMaxMinChart = ref<HTMLCanvasElement | null>(null);
 
-// 跳转到指定路径
-// 通用的数据获取方法
 const fetchData = async (type: string) => {
   try {
     const response = await axios.get(`http://localhost:8080/api/data/${type}`);
-    console.log(`get ${type} data successfully`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching ${type} data:`, error);
@@ -63,22 +110,19 @@ const fetchData = async (type: string) => {
   }
 };
 
-// 按日期分组并计算每一天的平均、最高、最低湿度
 const calculateDailyAverage = (data: any[]) => {
   const dailyData: { [key: string]: number[] } = {};
 
-  // 将数据按日期分组
   data.forEach((item) => {
     const date = new Date(item.date);
-    const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日`; // 格式化为：2月1日
+    const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日`;
 
     if (!dailyData[formattedDate]) {
       dailyData[formattedDate] = [];
     }
-    dailyData[formattedDate].push(item.humidity); // 按湿度分组
+    dailyData[formattedDate].push(item.humidity);
   });
 
-  // 计算每一天的平均湿度
   const dailyAverages: { date: string, max: number, min: number, average: number }[] = [];
   Object.keys(dailyData).forEach((date) => {
     const temps = dailyData[date];
@@ -89,13 +133,10 @@ const calculateDailyAverage = (data: any[]) => {
     dailyAverages.push({ date, max, min, average });
   });
 
-  // 按日期排序
   dailyAverages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
   return dailyAverages;
 };
 
-// 创建湿度折线图
 const createLineChart = (canvasRef: any, data: any, label: string) => {
   if (!canvasRef.value) return;
 
@@ -105,34 +146,67 @@ const createLineChart = (canvasRef: any, data: any, label: string) => {
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.map((item: any) => item.date), // X轴为每一天的日期
+      labels: data.map((item: any) => item.date),
       datasets: [
         {
           label,
-          data: data.map((item: any) => item.average), // Y轴为每一天的平均湿度
-          borderColor: 'rgba(153, 102, 255, 1)',
-          fill: false,
-          tension: 0.1,
+          data: data.map((item: any) => item.average),
+          borderColor: 'rgba(100, 126, 234, 1)',
+          backgroundColor: 'rgba(100, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+          pointBorderColor: 'rgba(100, 126, 234, 1)',
+          pointRadius: 4,
+          pointHoverRadius: 6
         },
       ],
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: 'top',
+          labels: {
+            color: '#64748b',
+            font: {
+              size: 12
+            }
+          }
         },
+        tooltip: {
+          backgroundColor: 'rgba(30, 41, 59, 0.9)',
+          titleColor: '#f8fafc',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(100, 126, 234, 0.5)',
+          borderWidth: 1
+        }
       },
       scales: {
+        x: {
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
+        },
         y: {
           beginAtZero: false,
-        },
-      },
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
+        }
+      }
     },
   });
 };
 
-// 创建湿度直方图
 const createHistogram = (canvasRef: any, data: any) => {
   if (!canvasRef.value) return;
 
@@ -154,23 +228,59 @@ const createHistogram = (canvasRef: any, data: any) => {
           humidityValues.filter((val: number) => val >= 60 && val < 80).length,
           humidityValues.filter((val: number) => val >= 80).length
         ],
-        backgroundColor: 'rgba(153, 102, 255, 0.5)',
-        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: [
+          'rgba(100, 126, 234, 0.7)',
+          'rgba(118, 75, 162, 0.7)',
+          'rgba(100, 126, 234, 0.7)',
+          'rgba(118, 75, 162, 0.7)',
+          'rgba(100, 126, 234, 0.7)'
+        ],
+        borderColor: [
+          'rgba(100, 126, 234, 1)',
+          'rgba(118, 75, 162, 1)',
+          'rgba(100, 126, 234, 1)',
+          'rgba(118, 75, 162, 1)',
+          'rgba(100, 126, 234, 1)'
+        ],
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(30, 41, 59, 0.9)',
+          titleColor: '#f8fafc',
+          bodyColor: '#e2e8f0'
+        }
+      },
       scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: '#64748b'
+          }
+        },
         y: {
-          beginAtZero: true
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
         }
       }
     }
   });
 };
 
-// 创建湿度面积图
 const createAreaChart = (canvasRef: any, data: any) => {
   if (!canvasRef.value) return;
 
@@ -184,28 +294,59 @@ const createAreaChart = (canvasRef: any, data: any) => {
       datasets: [{
         label: '湿度变化趋势',
         data: data.map((item: any) => item.average),
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: 'rgba(118, 75, 162, 1)',
+        backgroundColor: 'rgba(118, 75, 162, 0.3)',
         fill: true,
-        tension: 0.4
+        tension: 0.4,
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+        pointBorderColor: 'rgba(118, 75, 162, 1)'
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top'
+          position: 'top',
+          labels: {
+            color: '#64748b',
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(30, 41, 59, 0.9)',
+          titleColor: '#f8fafc',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(118, 75, 162, 0.5)',
+          borderWidth: 1
         }
       },
       scales: {
+        x: {
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
+        },
         y: {
-          beginAtZero: false
+          beginAtZero: false,
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
         }
       }
     }
   });
 };
-// 创建湿度最高最低折线图
+
 const createMaxMinHumidityChart = (canvasRef: any, data: any) => {
   if (!canvasRef.value) return;
   const ctx = canvasRef.value.getContext('2d');
@@ -219,31 +360,65 @@ const createMaxMinHumidityChart = (canvasRef: any, data: any) => {
         {
           label: '每日最高湿度',
           data: data.map((item: any) => item.max),
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          fill: true,
-          tension: 0.4
+          borderColor: 'rgba(100, 126, 234, 1)',
+          backgroundColor: 'rgba(100, 126, 234, 0.1)',
+          fill: '+1',
+          tension: 0.4,
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+          pointBorderColor: 'rgba(100, 126, 234, 1)'
         },
         {
           label: '每日最低湿度',
           data: data.map((item: any) => item.min),
-          borderColor: 'rgba(153, 102, 255, 1)',
-          backgroundColor: 'rgba(153, 102, 255, 0.2)',
-          fill: true,
-          tension: 0.4
+          borderColor: 'rgba(118, 75, 162, 1)',
+          backgroundColor: 'rgba(118, 75, 162, 0.1)',
+          fill: false,
+          tension: 0.4,
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+          pointBorderColor: 'rgba(118, 75, 162, 1)'
         }
       ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top'
+          position: 'top',
+          labels: {
+            color: '#64748b',
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(30, 41, 59, 0.9)',
+          titleColor: '#f8fafc',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(100, 126, 234, 0.5)',
+          borderWidth: 1
         }
       },
       scales: {
+        x: {
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
+        },
         y: {
-          beginAtZero: false
+          beginAtZero: false,
+          grid: {
+            color: 'rgba(226, 232, 240, 0.2)'
+          },
+          ticks: {
+            color: '#64748b'
+          }
         }
       }
     }
@@ -251,14 +426,10 @@ const createMaxMinHumidityChart = (canvasRef: any, data: any) => {
 };
 
 onMounted(async () => {
-  // 获取湿度数据
   const humidityData = await fetchData('humidity');
-
-  // 计算每日的平均湿度
   const dailyHumidityData = calculateDailyAverage(humidityData);
 
-  // 创建不同类型的湿度图表
-  createLineChart(humidityLineChart, dailyHumidityData, '2月--6月，每日平均湿度（单位%）');
+  createLineChart(humidityLineChart, dailyHumidityData, '2月-6月每日平均湿度（单位%）');
   createHistogram(humidityHistogram, dailyHumidityData);
   createAreaChart(humidityAreaChart, dailyHumidityData);
   createMaxMinHumidityChart(humidityMaxMinChart, dailyHumidityData);
@@ -268,50 +439,156 @@ onMounted(async () => {
 <style scoped>
 .data-chart-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 2rem;
+  gap: 2rem;
 }
 
 .charts {
   flex: 3;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  width: 70%;
+  gap: 2rem;
 }
 
 .chart-container-wrapper {
   display: flex;
-  justify-content: space-between;
-  gap: 15px;
+  gap: 2rem;
+  height: 50%;
 }
 
 .chart-container {
-  width: 48%;
-  height: 400px;
+  flex: 1;
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .data-description {
   flex: 1;
-  width: 28%;
-  background-color: #f4f4f4;
-  padding: 15px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
-.data-description h3 {
-  margin-bottom: 20px;
-  font-size: 1.25em;
-  font-weight: bold;
+.description-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.data-description ul {
-  list-style-type: disc;
-  padding-left: 20px;
+.description-title {
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.75rem;
 }
 
-.data-description ul li {
-  margin: 10px 0;
+.description-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 3px;
+  background: linear-gradient(90deg, #647eea, #764ba2);
+  border-radius: 3px;
+}
+
+.description-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.feature-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #647eea, #764ba2);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 0.5rem;
+}
+
+.feature-text {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.note-box {
+  margin-top: auto;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  border-left: 4px solid #647eea;
+}
+
+.note-box svg {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #647eea;
+  margin-top: 0.125rem;
+}
+
+.note-box p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+@media (max-width: 1024px) {
+  .data-chart-container {
+    flex-direction: column;
+  }
+
+  .chart-container-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .data-chart-container {
+    padding: 1rem;
+  }
+
+  .chart-container {
+    padding: 1rem;
+  }
+
+  .description-card {
+    padding: 1.5rem;
+  }
 }
 </style>

@@ -1,44 +1,96 @@
 <template>
     <div class="data-chart-container">
-        <!-- 主图区域 -->
         <div class="charts">
             <div class="chart-container-wrapper">
-                <!-- 折线图 -->
                 <div class="chart-container">
                     <canvas ref="temperatureLineChart"></canvas>
                 </div>
-                <!-- 每日最高最低气温图 -->
                 <div class="chart-container">
                     <canvas ref="temperatureAreaChart"></canvas>
                 </div>
             </div>
             <div class="chart-container-wrapper">
-                <!-- 直方图 -->
                 <div class="chart-container">
                     <canvas ref="temperatureHistogram"></canvas>
                 </div>
-
-                <!-- 面积图 -->
-                <div class="chart-container1">
+                <div class="chart-container">
                     <canvas ref="temperatureAreaChart1"></canvas>
                 </div>
-
             </div>
         </div>
 
-        <!-- 右侧温度数据说明 -->
         <div class="data-description">
-            <h3>气温数据说明</h3>
-            <p>以下是基于过去几个月的每日平均气温数据，展示了气温变化趋势、分布情况以及波动范围。这些图表帮助我们分析气温随时间的变化，了解季节性变化和气候模式。</p>
-            <ul>
-              <li><strong>折线图</strong>: 显示每日气温的变化趋势，可以帮助我们观察气温随时间的波动情况，分析是否存在周期性变化或突发的温度变化。</li>
-              <li><strong>直方图</strong>: 展示气温的分布情况，按气温区间进行统计。直方图可以帮助我们了解气温的集中分布范围，分析温度的常见范围，以及温差的分布特点。</li>
-              <li><strong>面积图</strong>: 强调气温波动的变化趋势，填充了气温曲线下方的区域。这张图表特别有助于观察气温的极值变化，并且清晰地突出气温在特定时间段内的剧烈变化。</li>
-              <li><strong>气温最大值最小值图</strong>: 显示每日的最高气温和最低气温，填充它们之间的区域。该图表有助于我们观察气温波动范围，特别是在极端天气条件下，气温的变化幅度。</li>
-            </ul>
-            <p><strong>注意</strong>: 气温数据是根据每天的实际测量结果计算得出的平均值。气温的变化受到季节、天气和气候模式等多种因素的影响，因此在分析气温趋势时应考虑这些外部因素。</p>
-          </div>
-          
+            <div class="description-card">
+                <h3 class="description-title">气温数据分析</h3>
+                <div class="description-content">
+                    <p>基于过去几个月的每日气温数据，可视化展示了气温变化趋势、分布情况及波动范围。</p>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>折线图</strong>: 直观展示每日气温变化趋势，识别季节性变化和异常波动。
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="12" width="4" height="8" rx="1" fill="currentColor" />
+                                <rect x="9" y="8" width="4" height="12" rx="1" fill="currentColor" />
+                                <rect x="15" y="4" width="4" height="16" rx="1" fill="currentColor" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>直方图</strong>: 分析气温分布情况，了解常见温度范围和气候特点。
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M3 17L9 11L13 15L21 7V17H3Z" fill="currentColor" fill-opacity="0.2" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>面积图</strong>: 突出气温波动变化，识别极端天气时段。
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M3 12L9 6L13 10L21 2" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M3 17L9 11L13 15L21 7V17H3Z" fill="currentColor" fill-opacity="0.2" />
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <strong>极值图</strong>: 显示每日最高/最低气温，分析昼夜温差变化。
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                                stroke="currentColor" stroke-width="2" />
+                            <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        <p>气温数据受季节、天气和气候模式影响，分析时需综合考虑。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -47,17 +99,14 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 
-
 const temperatureLineChart = ref<HTMLCanvasElement | null>(null);
 const temperatureHistogram = ref<HTMLCanvasElement | null>(null);
 const temperatureAreaChart = ref<HTMLCanvasElement | null>(null);
 const temperatureAreaChart1 = ref<HTMLCanvasElement | null>(null);
 
-// 通用的数据获取方法
 const fetchData = async (type: string) => {
     try {
         const response = await axios.get(`http://localhost:8080/api/data/${type}`);
-        console.log(`get ${type} data successfully`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching ${type} data:`, error);
@@ -65,14 +114,12 @@ const fetchData = async (type: string) => {
     }
 };
 
-// 按日期分组并计算每日的最高、最低和平均温度
 const calculateDailyStats = (data: any[]) => {
     const dailyData: { [key: string]: number[] } = {};
 
-    // 将数据按日期分组
     data.forEach((item) => {
         const date = new Date(item.date);
-        const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日`; // 格式化为：2月1日
+        const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日`;
 
         if (!dailyData[formattedDate]) {
             dailyData[formattedDate] = [];
@@ -80,7 +127,6 @@ const calculateDailyStats = (data: any[]) => {
         dailyData[formattedDate].push(item.temperature);
     });
 
-    // 计算每日的最高、最低和平均温度
     const dailyStats: { date: string, max: number, min: number, average: number }[] = [];
     Object.keys(dailyData).forEach((date) => {
         const temps = dailyData[date];
@@ -90,13 +136,10 @@ const calculateDailyStats = (data: any[]) => {
         dailyStats.push({ date, max, min, average });
     });
 
-    // 按日期排序
     dailyStats.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
     return dailyStats;
 };
 
-// 创建折线图
 const createLineChart = (canvasRef: any, data: any, label: string) => {
     if (!canvasRef.value) return;
 
@@ -111,29 +154,62 @@ const createLineChart = (canvasRef: any, data: any, label: string) => {
                 {
                     label,
                     data: data.map((item: any) => item.average),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    fill: false,
-                    tension: 0.1,
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                    pointBorderColor: 'rgba(239, 68, 68, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 },
             ],
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        color: '#64748b',
+                        font: {
+                            size: 12
+                        }
+                    }
                 },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#e2e8f0',
+                    borderColor: 'rgba(239, 68, 68, 0.5)',
+                    borderWidth: 1
+                }
             },
             scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                },
                 y: {
                     beginAtZero: false,
-                },
-            },
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                }
+            }
         },
     });
 };
 
-// 创建直方图
 const createHistogram = (canvasRef: any, data: any) => {
     if (!canvasRef.value) return;
 
@@ -157,23 +233,63 @@ const createHistogram = (canvasRef: any, data: any) => {
                     temperatureValues.filter((val: number) => val >= 25 && val < 30).length,
                     temperatureValues.filter((val: number) => val >= 30).length
                 ],
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(220, 38, 38, 0.7)',
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(220, 38, 38, 0.7)',
+                    'rgba(239, 68, 68, 0.7)',
+                    'rgba(220, 38, 38, 0.7)',
+                    'rgba(239, 68, 68, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(220, 38, 38, 1)',
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(220, 38, 38, 1)',
+                    'rgaku(239, 68, 68, 1)',
+                    'rgba(220, 38, 38, 1)',
+                    'rgba(239, 68, 68, 1)'
+                ],
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#e2e8f0'
+                }
+            },
             scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
                 }
             }
         }
     });
 };
 
-// 创建每日最高最低气温图
 const createAreaChart = (canvasRef: any, data: any) => {
     if (!canvasRef.value) return;
 
@@ -188,37 +304,71 @@ const createAreaChart = (canvasRef: any, data: any) => {
                 {
                     label: '每日最高气温',
                     data: data.map((item: any) => item.max),
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                    pointBorderColor: 'rgba(239, 68, 68, 1)'
                 },
                 {
                     label: '每日最低气温',
                     data: data.map((item: any) => item.min),
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    backgroundColor: 'rgba(220, 38, 38, 0.1)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                    pointBorderColor: 'rgba(220, 38, 38, 1)'
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top'
+                    position: 'top',
+                    labels: {
+                        color: '#64748b',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#e2e8f0',
+                    borderColor: 'rgba(239, 68, 68, 0.5)',
+                    borderWidth: 1
                 }
             },
             scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                },
                 y: {
-                    beginAtZero: false
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
                 }
             }
         }
     });
 };
-// 创建每日最高、最低气温
+
 const createAreaChart1 = (canvasRef: any, data: any) => {
     if (!canvasRef.value) return;
 
@@ -232,95 +382,222 @@ const createAreaChart1 = (canvasRef: any, data: any) => {
             datasets: [{
                 label: '气温变化趋势',
                 data: data.map((item: any) => item.average),
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(239, 68, 68, 1)',
+                backgroundColor: 'rgba(239, 68, 68, 0.3)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                pointBorderColor: 'rgba(239, 68, 68, 1)'
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top'
+                    position: 'top',
+                    labels: {
+                        color: '#64748b',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#e2e8f0',
+                    borderColor: 'rgba(239, 68, 68, 0.5)',
+                    borderWidth: 1
                 }
             },
             scales: {
+                x: {
+                    grid: {
+                        color: 'rgaku(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
+                },
                 y: {
-                    beginAtZero: false
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(226, 232, 240, 0.2)'
+                    },
+                    ticks: {
+                        color: '#64748b'
+                    }
                 }
             }
         }
     });
 };
-
 onMounted(async () => {
-    // 获取温度数据
     const temperatureData = await fetchData('temperature');
-
-    // 计算每日的最高、最低和平均温度
     const dailyTemperatureData = calculateDailyStats(temperatureData);
 
-    // 创建不同类型的图表
     createLineChart(temperatureLineChart, dailyTemperatureData, '每日温度变化趋势');
     createHistogram(temperatureHistogram, dailyTemperatureData);
     createAreaChart(temperatureAreaChart, dailyTemperatureData);
     createAreaChart1(temperatureAreaChart1, dailyTemperatureData);
-
-
 });
 </script>
 
 <style scoped>
 .data-chart-container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 2rem;
+    gap: 2rem;
 }
 
 .charts {
     flex: 3;
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    width: 70%;
+    gap: 2rem;
 }
 
 .chart-container-wrapper {
     display: flex;
-    justify-content: space-between;
-    gap: 15px;
+    gap: 2rem;
+    height: 50%;
 }
 
 .chart-container {
-    width: 48%;
-    height: 400px;
+    flex: 1;
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
-.chart-container1 {
-    width: 48%;
-    height: 400px;
+
+.chart-container:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
+
 .data-description {
     flex: 1;
-    width: 28%;
-    background-color: #f4f4f4;
-    padding: 15px;
-    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
 }
 
-.data-description h3 {
-    margin-bottom: 20px;
-    font-size: 1.25em;
-    font-weight: bold;
+.description-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.data-description ul {
-    list-style-type: disc;
-    padding-left: 20px;
+.description-title {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.75rem;
 }
 
-.data-description ul li {
-    margin: 10px 0;
+.description-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 3rem;
+    height: 3px;
+    background: linear-gradient(90deg, #f00c17, #f00c17);
+    border-radius: 3px;
+}
+
+.description-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.feature-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.feature-icon {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #f00c17, #f00c17);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 0.5rem;
+}
+
+.feature-text {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.note-box {
+    margin-top: auto;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    border-left: 4px solid #f00c17;
+}
+
+.note-box svg {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #f00c17;
+    margin-top: 0.125rem;
+}
+
+.note-box p {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+@media (max-width: 1024px) {
+    .data-chart-container {
+        flex-direction: column;
+    }
+
+    .chart-container-wrapper {
+        flex-direction: column;
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .data-chart-container {
+        padding: 1rem;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+
+    .description-card {
+        padding: 1.5rem;
+    }
 }
 </style>
