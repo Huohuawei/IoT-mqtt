@@ -134,7 +134,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 // 返回首页
 const goBack = () => {
-  router.push('/');
+  router.push('/home');
 };
 
 // 响应式数据

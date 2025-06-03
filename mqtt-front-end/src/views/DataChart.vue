@@ -176,7 +176,7 @@ const goToComponent = (path: string) => {
 
 // 返回首页
 const goBack = () => {
-  router.push('/');
+  router.push('/home');
 };
 
 // 生成粒子样式

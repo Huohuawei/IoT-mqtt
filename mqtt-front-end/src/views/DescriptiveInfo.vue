@@ -214,7 +214,7 @@ const getParticleStyle = (index) => {
 
 // 返回首页
 const goBack = () => {
-  router.push('/');
+  router.push('/home');
 };
 
 
