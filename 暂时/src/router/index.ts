@@ -12,12 +12,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: Login
     },
     {
-      path: '/home',
+      path: '/',
       name: 'home',
       component: () => import('../views/Home.vue'),
       meta: { requiresAuth: true }
